@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Next.js build
+.next/
+out/
+
+# Environment variables (à configurer dans Vercel Dashboard)
+.env
+.env*.local
+
+# OS files
+.DS_Store
+*.log

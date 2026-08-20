@@ -1,0 +1,18 @@
+{
+  "name": "widget-to-wallpaper",
+  "version": "1.0.0",
+  "description": "Outil open source pour afficher son calendrier directement sur son lockscreen",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "next": "^16.3.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  }
+}

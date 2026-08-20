@@ -43,8 +43,93 @@ const MONTHS = [
 ];
 
 // ====================================================================
-// 2. UTILITAIRES ICAL & DATES (PARIS TIMEZONE)
+// 2. UTILITAIRES ICAL & DATES (PARIS TIMEZONE) & COULEURS
 // ====================================================================
+const COLOR_MAP = {
+  red: '#FF453A',
+  rouge: '#FF453A',
+  orange: '#FF9F0A',
+  yellow: '#FFD60A',
+  jaune: '#FFD60A',
+  green: '#30D158',
+  vert: '#30D158',
+  blue: '#0A84FF',
+  bleu: '#0A84FF',
+  purple: '#BF5AF2',
+  violet: '#BF5AF2',
+  pink: '#FF375F',
+  rose: '#FF375F',
+  cyan: '#00F6FF',
+  turquoise: '#00F6FF',
+  gray: '#8E8E93',
+  gris: '#8E8E93',
+  brown: '#AC8E68',
+  marron: '#AC8E68',
+};
+
+const EMOJI_COLOR_MAP = [
+  { regex: /^[🔴🛑]/u, color: '#FF453A' },
+  { regex: /^[🟠🔶🟧]/u, color: '#FF9F0A' },
+  { regex: /^[🟡⭐🟨]/u, color: '#FFD60A' },
+  { regex: /^[🟢✅🟩]/u, color: '#30D158' },
+  { regex: /^[🔵🔷🟦]/u, color: '#0A84FF' },
+  { regex: /^[🟣🟪]/u, color: '#BF5AF2' },
+  { regex: /^[🩵🐬💎]/u, color: '#00F6FF' },
+  { regex: /^[🩷]/u, color: '#FF375F' },
+  { regex: /^[🟤🟫]/u, color: '#AC8E68' },
+  { regex: /^[⚫⬛]/u, color: '#8E8E93' },
+];
+
+function extractEventColor(block, summary) {
+  // 1. Tag direct iCal (COLOR, X-APPLE-CALENDAR-COLOR, X-COLOR)
+  const colorMatch = block.match(/(?:COLOR|X-APPLE-CALENDAR-COLOR|X-COLOR)(?:;[^:]+)?:([^\r\n]+)/i);
+  if (colorMatch) {
+    const rawVal = colorMatch[1].trim().toLowerCase();
+    if (/^#[0-9a-f]{3,8}$/i.test(rawVal)) {
+      return rawVal;
+    }
+    if (COLOR_MAP[rawVal]) {
+      return COLOR_MAP[rawVal];
+    }
+  }
+
+  // 2. Tag dans le titre [couleur] ou [#HEX]
+  const titleTagMatch = summary.match(/^\[([#a-zA-Z0-9]+)\]/);
+  if (titleTagMatch) {
+    const tag = titleTagMatch[1].toLowerCase();
+    if (/^#[0-9a-f]{3,8}$/i.test(tag)) return tag;
+    if (COLOR_MAP[tag]) return COLOR_MAP[tag];
+  }
+
+  // 3. Emoji au début du titre
+  for (const item of EMOJI_COLOR_MAP) {
+    if (item.regex.test(summary)) {
+      return item.color;
+    }
+  }
+
+  return '#00F6FF'; // Cyan par défaut
+}
+
+function hexToRgba(hex, alpha = 0.10) {
+  if (!hex) return `rgba(0, 246, 255, ${alpha})`;
+  let c = hex.replace('#', '');
+  if (c.length === 3) {
+    c = c.split('').map((x) => x + x).join('');
+  }
+  if (c.length === 6) {
+    const num = parseInt(c, 16);
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  if (hex.startsWith('rgba') || hex.startsWith('rgb')) {
+    return hex;
+  }
+  return `rgba(0, 246, 255, ${alpha})`;
+}
+
 const formatParisYMD = (date = new Date()) =>
   new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris' }).format(date);
 
@@ -88,7 +173,9 @@ function parseIcalEvent(block, todayParisYMD) {
   if (/STATUS:CANCELLED/i.test(block)) return null;
 
   const summaryMatch = block.match(/SUMMARY:(.*)/);
-  const summary = summaryMatch ? cleanIcalText(summaryMatch[1]) : 'Sans titre';
+  const rawSummary = summaryMatch ? cleanIcalText(summaryMatch[1]) : 'Sans titre';
+  const color = extractEventColor(block, rawSummary);
+  const summary = rawSummary.replace(/^\[[#a-zA-Z0-9]+\]\s*/, '');
 
   const startMatch = block.match(/DTSTART(?:;[^:]+)?:([^\r\n]+)/);
   if (!startMatch) return null;
@@ -111,6 +198,7 @@ function parseIcalEvent(block, todayParisYMD) {
         isAllDay: true,
         startTimestamp: 0,
         endTimestamp: Infinity,
+        color: color,
       };
     }
     return null;
@@ -136,6 +224,7 @@ function parseIcalEvent(block, todayParisYMD) {
         isAllDay: false,
         startTimestamp: startDate.getTime(),
         endTimestamp: endDate.getTime(),
+        color: color,
       };
     }
     return null;
@@ -162,6 +251,7 @@ function parseIcalEvent(block, todayParisYMD) {
         isAllDay: false,
         startTimestamp: getParisTimestamp(startYMD, h, min, s),
         endTimestamp: getParisTimestamp(startYMD, eh, emin, es),
+        color: color,
       };
     }
   }
@@ -230,26 +320,42 @@ function selectEvents(allEvents, maxCount = 3) {
 // ====================================================================
 // 3. COMPOSANT LIGNE D'ÉVÉNEMENT (FACTORISÉ)
 // ====================================================================
-function EventRow({ title, time, theme }) {
+function EventRow({ title, time, theme, isExpanded, color, isDark }) {
+  const eventColor = color || theme.pillColor || '#00F6FF';
+  const alpha = isDark ? 0.16 : 0.10;
+  const eventBg = hexToRgba(eventColor, alpha);
+
+  const padding = isExpanded ? '16px' : '28px 36px';
+  const borderRadius = isExpanded ? '20px' : '32px';
+  const gap = isExpanded ? '20px' : '28px';
+
+  const pillWidth = isExpanded ? '18px' : '14px';
+  const pillHeight = isExpanded ? '80px' : '76px';
+  const pillRadius = isExpanded ? '20px' : '20px';
+
+  const titleSize = isExpanded ? '32px' : '48px';
+  const timeSize = isExpanded ? '24px' : '38px';
+  const textGap = isExpanded ? '8px' : '6px';
+
   return (
     <div
       style={{
         display: 'flex',
-        background: theme.eventBackground,
-        borderRadius: '32px',
-        padding: '28px 36px',
+        background: eventBg,
+        borderRadius: borderRadius,
+        padding: padding,
         alignItems: 'center',
-        gap: '28px',
+        gap: gap,
         width: '100%',
       }}
     >
       <div
         style={{
           display: 'flex',
-          width: '14px',
-          height: '76px',
-          backgroundColor: theme.pillColor,
-          borderRadius: '20px',
+          width: pillWidth,
+          height: pillHeight,
+          backgroundColor: eventColor,
+          borderRadius: pillRadius,
           flexShrink: 0,
         }}
       />
@@ -257,7 +363,7 @@ function EventRow({ title, time, theme }) {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '6px',
+          gap: textGap,
           flex: 1,
           minWidth: 0,
           overflow: 'hidden',
@@ -268,7 +374,7 @@ function EventRow({ title, time, theme }) {
           style={{
             display: 'flex',
             color: theme.eventTitle,
-            fontSize: '48px',
+            fontSize: titleSize,
             fontWeight: 600,
             lineHeight: 1.2,
             overflow: 'hidden',
@@ -282,7 +388,7 @@ function EventRow({ title, time, theme }) {
           style={{
             display: 'flex',
             color: theme.eventTime,
-            fontSize: '38px',
+            fontSize: timeSize,
             fontWeight: 500,
             lineHeight: 1.2,
             overflow: 'hidden',
@@ -304,6 +410,8 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const themeName = searchParams.get('theme') || 'light';
+    const variant = searchParams.get('variant') || 'default';
+    const isExpanded = variant === 'expanded';
     const theme = THEMES[themeName] || THEMES.light;
 
     const now = new Date();
@@ -314,17 +422,61 @@ export async function GET(request) {
     const dayName = DAYS[dayIndex !== undefined ? dayIndex : now.getDay()];
     const monthName = MONTHS[monthIndex !== undefined ? monthIndex : now.getMonth()];
 
-    // Récupération des événements
-    const allEvents = await fetchEvents(process.env.GOOGLE_CALENDAR_ICAL_URL);
-    const displayedEvents = selectEvents(allEvents, 3);
-    const totalCount = allEvents.length;
+    // Détection de la configuration et du domaine hôte
+    const icalUrl = process.env.GOOGLE_CALENDAR_ICAL_URL;
+    const isConfigured = Boolean(
+      icalUrl &&
+      !icalUrl.includes('VOTRE_IDENTIFIANT') &&
+      !icalUrl.includes('VOTRE_URL_ICAL_ICI') &&
+      (icalUrl.startsWith('http://') || icalUrl.startsWith('https://'))
+    );
 
-    const footerText =
-      totalCount === 0
-        ? '0 événement aujourd’hui'
-        : totalCount === 1
-        ? '1 événement aujourd’hui'
-        : `${totalCount} événements aujourd’hui`;
+    const host =
+      request.headers.get('x-forwarded-host') ||
+      request.headers.get('host') ||
+      process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+      process.env.VERCEL_URL ||
+      'localhost:3000';
+
+    let displayedEvents = [];
+    let footerText = '';
+    let column1Events = [];
+    let column2Events = [];
+
+    if (!isConfigured) {
+      displayedEvents = [
+        {
+          title: '⚠️ Configuration requise',
+          time: `${host}/setup.html`,
+          isAllDay: false,
+        },
+      ];
+      footerText = `Ouvrez ${host}/setup.html`;
+      if (isExpanded) column1Events = [...displayedEvents];
+    } else {
+      const allEvents = await fetchEvents(icalUrl);
+      const maxCount = isExpanded ? 8 : 3;
+      displayedEvents = selectEvents(allEvents, maxCount);
+      const totalCount = allEvents.length;
+
+      footerText =
+        totalCount === 0
+          ? '0 événement aujourd’hui'
+          : totalCount === 1
+          ? '1 événement aujourd’hui'
+          : `${totalCount} événements aujourd’hui`;
+
+      if (isExpanded) {
+        if (displayedEvents.length === 0) {
+          column1Events.push({ title: 'Aucun événement', time: 'Journée libre' });
+        } else {
+          displayedEvents.forEach((ev, idx) => {
+            if (idx % 2 === 0) column1Events.push(ev);
+            else column2Events.push(ev);
+          });
+        }
+      }
+    }
 
     return new ImageResponse(
       (
@@ -348,10 +500,10 @@ export async function GET(request) {
               backgroundColor: theme.cardBackground,
               boxShadow: theme.cardShadow,
               borderRadius: '76px',
-              padding: '64px 56px 56px 56px',
+              padding: isExpanded ? '80px 50px 50px 50px' : '64px 56px 56px 56px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '52px',
+              gap: isExpanded ? '70px' : '52px',
             }}
           >
             {/* Header Date */}
@@ -396,15 +548,30 @@ export async function GET(request) {
             </div>
 
             {/* Liste des événements */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-              {displayedEvents.length > 0 ? (
-                displayedEvents.map((ev, idx) => (
-                  <EventRow key={idx} title={ev.title} time={ev.time} theme={theme} />
-                ))
-              ) : (
-                <EventRow title="Aucun événement" time="Journée libre" theme={theme} />
-              )}
-            </div>
+            {isExpanded ? (
+              <div style={{ display: 'flex', width: '100%', gap: '20px', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', flex: '1 1 0', minWidth: 0, flexDirection: 'column', gap: '30px' }}>
+                  {column1Events.map((ev, idx) => (
+                    <EventRow key={`col1-${idx}`} title={ev.title} time={ev.time} theme={theme} isExpanded={true} color={ev.color} isDark={themeName === 'dark'} />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', flex: '1 1 0', minWidth: 0, flexDirection: 'column', gap: '30px' }}>
+                  {column2Events.map((ev, idx) => (
+                    <EventRow key={`col2-${idx}`} title={ev.title} time={ev.time} theme={theme} isExpanded={true} color={ev.color} isDark={themeName === 'dark'} />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+                {displayedEvents.length > 0 ? (
+                  displayedEvents.map((ev, idx) => (
+                    <EventRow key={idx} title={ev.title} time={ev.time} theme={theme} isExpanded={false} color={ev.color} isDark={themeName === 'dark'} />
+                  ))
+                ) : (
+                  <EventRow title="Aucun événement" time="Journée libre" theme={theme} isExpanded={false} color={theme.pillColor} isDark={themeName === 'dark'} />
+                )}
+              </div>
+            )}
 
             {/* Footer */}
             <div

@@ -1,13 +1,16 @@
 # 📱 Widget to Wallpaper
 
 > **Widget to Wallpaper** est un outil gratuit et open source permettant d'afficher votre calendrier directement sur l'écran verrouillé (*lockscreen*) de votre iPhone, sans aucune application tierce payante.
-> 
-> 📱 **Compatibilité** : Conçu et testé pour **iPhone 17** (résolution 1206 × 2622 px). Non testé sur les autres modèles. L'ajout de la compatibilité pour d'autres modèles sont prévus
 >
+> 📱 **Compatibilité** : Conçu et testé pour **iPhone 17** (résolution 1206 × 2622 px). Non testé sur les autres modèles.
+>
+> 📖 **Tutoriel interactif pas-à-pas** : Une page de configuration guidée style Notion est incluse directement dans le projet sur **`/setup.html`** (ex. `https://votre-projet.vercel.app/setup.html`).
+
 ---
 
 ## ✨ Fonctionnalités
 
+- 🧭 **Guide de configuration interactif** : Page `/setup.html` intégrée avec tutoriel pas-à-pas, détection automatique de domaine et boutons de copie en 1 clic.
 - 📅 **Synchronisation iCal en direct** : Se synchronise instantanément avec votre flux Google Agenda (ou tout calendrier supportant iCal / `.ics`).
 - 🌓 **Thèmes Clair & Sombre** : Basculez automatiquement entre les modes Jour (`theme=light`) et Nuit (`theme=dark`).
 - ⚡ **Génération à la volée ultra-rapide** : Rendu graphique instantané propulsé par [Next.js](https://nextjs.org/) et `next/og` (Satori).
@@ -36,7 +39,9 @@
 
 ---
 
-## 🚀 Guide de déploiement pas à pas
+## 🚀 Guide de déploiement
+
+> 💡 **Astuce** : Une fois déployé sur Vercel, ouvrez simplement **`https://votre-projet.vercel.app/setup.html`** pour suivre l'assistant interactif étape par étape !
 
 ### Étape 1 : Récupérer votre lien iCal Google Agenda
 
@@ -60,7 +65,8 @@
 5. Cliquez sur **Deploy**.
 
 Votre instance sera accessible publiquement sur une URL du type :
-`https://votre-projet.vercel.app/api/wallpaper`
+- **Image de fond d'écran** : `https://votre-projet.vercel.app/api/wallpaper`
+- **Page de configuration** : `https://votre-projet.vercel.app/setup.html`
 
 ---
 
@@ -94,12 +100,12 @@ Génère et retourne l'image du fond d'écran au format image dynamique.
 
 | Paramètre | Type | Valeur par défaut | Description |
 | :--- | :--- | :--- | :--- |
-| `theme` | `string` | `light` | Thème visuel du widget : `light` ou `dark` |
+| `theme` | `string` | `light` | Thème visuel du widget : `light` (clair) ou `dark` (sombre) |
+| `variant` | `string` | `default` | Taille d'affichage : `default` (standard - 3 événements) ou `expanded` (grande - 8 événements sur 2 colonnes) |
 
 #### Exemples :
-- `https://votre-projet.vercel.app/api/wallpaper` (Thème clair par défaut)
-- `https://votre-projet.vercel.app/api/wallpaper?theme=light` (Thème clair forcé)
-- `https://votre-projet.vercel.app/api/wallpaper?theme=dark` (Thème sombre forcé)
+- `https://votre-projet.vercel.app/api/wallpaper` (Thème clair standard)
+- `https://votre-projet.vercel.app/api/wallpaper?theme=dark&variant=expanded` (Thème sombre grand format)
 
 ---
 
@@ -127,7 +133,9 @@ cp .env.example .env
 npm run dev
 ```
 
-Ouvrez [http://localhost:3000/api/wallpaper](http://localhost:3000/api/wallpaper) dans votre navigateur pour visualiser le rendu en direct.
+Ouvrez :
+- [http://localhost:3000/setup.html](http://localhost:3000/setup.html) pour accéder au guide interactif de configuration.
+- [http://localhost:3000/api/wallpaper](http://localhost:3000/api/wallpaper) pour visualiser le rendu de votre fond d'écran en direct.
 
 ---
 

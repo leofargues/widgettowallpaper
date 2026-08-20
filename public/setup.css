@@ -1,0 +1,884 @@
+:root {
+  --bg: #ffffff;
+  --text: #37352f;
+  --text-secondary: #787774;
+  --text-tertiary: #9b9a97;
+  --border: #e9e9e7;
+  --border-subtle: #f1f1ef;
+  --surface: #fbfbfa;
+  --surface-hover: #f1f1ef;
+  --callout-bg: #f7f6f3;
+  --code-bg: #f7f6f3;
+  --code-border: #e9e9e7;
+  --code-text: #eb5757;
+  --primary-btn-bg: #2383e2;
+  --primary-btn-text: #ffffff;
+  --primary-btn-hover: #1b6ec2;
+  --accent: #2383e2;
+  --success: #0f7b6c;
+  --success-bg: #eef7f5;
+  --warning-bg: #fbf3db;
+  --warning-text: #8a6319;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #191919;
+    --text: #d4d4d4;
+    --text-secondary: #9b9b9b;
+    --text-tertiary: #686868;
+    --border: #2e2e2e;
+    --border-subtle: #252525;
+    --surface: #202020;
+    --surface-hover: #2a2a2a;
+    --callout-bg: #222222;
+    --code-bg: #242424;
+    --code-border: #333333;
+    --code-text: #ff7575;
+    --primary-btn-bg: #2383e2;
+    --primary-btn-text: #ffffff;
+    --primary-btn-hover: #3b94eb;
+    --accent: #38bdf8;
+    --success: #2eaadc;
+    --success-bg: #1e2830;
+    --warning-bg: #2c2718;
+    --warning-text: #e9c46a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 60px 20px 100px;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+}
+
+.container {
+  width: 100%;
+  max-width: 680px;
+}
+
+/* Notion Header */
+.page-icon-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
+  object-fit: cover;
+  display: block;
+}
+
+.page-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  display: inline-block;
+  user-select: none;
+}
+
+h1.page-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.page-desc {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+}
+
+/* Sticky Navigation Header */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 50;
+  padding-top: 10px;
+  padding-bottom: 2px;
+  margin-bottom: 24px;
+}
+
+/* Stepper / Progress Bar Notion Style */
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.progress-segment {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 999px;
+  transition: background 0.3s ease;
+  cursor: pointer;
+}
+
+.progress-segment.active {
+  background: var(--text);
+}
+
+.progress-segment.completed {
+  background: var(--primary-btn-bg);
+}
+
+.step-counter {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Step Navigation Tabs */
+.step-tabs {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  overflow: hidden;
+  padding-bottom: 8px;
+  margin-bottom: 36px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.step-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 4px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.step-tab span.tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.step-tab:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.step-tab.active {
+  background: var(--surface-hover);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.tab-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 4px;
+  background: var(--border);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.step-tab.active .tab-num {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* Mobile Step Dropdown (masqué sur desktop) */
+.mobile-step-dropdown-wrapper {
+  display: none;
+}
+
+/* Step Card Container (Single step displayed) */
+.step-content {
+  display: none;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.step-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h2.step-title {
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+p.step-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* Notion-like Lists */
+.notion-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.notion-list > li {
+  position: relative;
+  padding-left: 32px;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.notion-list > li::before {
+  content: attr(data-step);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Notion Callouts */
+.notion-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--callout-bg);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 20px 0;
+  font-size: 0.92rem;
+  color: var(--text);
+  border-left: 3px solid var(--border);
+}
+
+.notion-callout.warning {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-left-color: #d97706;
+}
+
+.notion-callout.success {
+  background: var(--success-bg);
+  color: var(--success);
+  border-left-color: #0f7b6c;
+}
+
+.callout-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Notion Code Blocks */
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 6px;
+  margin: 14px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  background: transparent;
+  border-bottom: 1px solid var(--code-border);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+pre {
+  padding: 12px 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85rem;
+  color: var(--text);
+  overflow-x: auto;
+  line-height: 1.5;
+  -webkit-overflow-scrolling: touch;
+}
+
+pre code {
+  word-break: break-all;
+}
+
+.copy-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.copy-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.link-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+code.inline {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  color: var(--code-text);
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  word-break: break-word;
+}
+
+/* Shortcut Download Button (Notion styled) */
+.shortcut-download-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.shortcut-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0070f3;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shortcut-btn:hover {
+  background: #0051cc;
+}
+
+/* Form & Interactive Controls */
+.form-group {
+  margin-bottom: 22px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 16px; /* Empêche le zoom auto sur iOS Safari */
+  font-family: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  -webkit-appearance: none;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-btn-bg);
+  background: var(--bg);
+}
+
+.form-help {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* Option Cards Grid */
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.option-card {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.option-card:hover {
+  background: var(--surface-hover);
+  border-color: var(--text-tertiary);
+}
+
+.option-card.active {
+  border-color: var(--primary-btn-bg);
+  background: var(--surface-hover);
+  box-shadow: 0 0 0 1px var(--primary-btn-bg);
+}
+
+.option-card-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.option-card-desc {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+/* Live Preview Section */
+.preview-section {
+  margin: 28px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.preview-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.preview-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.preview-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--border);
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.preview-badge.ready {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.phone-mockup-wrapper {
+  position: relative;
+  width: 220px;
+  max-width: 70vw;
+  aspect-ratio: 1206 / 2622;
+  background: var(--code-bg);
+  border-radius: 34px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15), 0 0 0 4px var(--border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phone-screen-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.phone-screen-img.loading {
+  opacity: 0.35;
+}
+
+.preview-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary-btn-bg);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: none;
+  z-index: 5;
+}
+
+.preview-spinner.visible {
+  display: block;
+}
+
+@keyframes spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Navigation Footer (Bottom buttons) */
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  gap: 10px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  transition: all 0.15s ease;
+  min-height: 40px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.btn-primary {
+  background: var(--primary-btn-bg);
+  color: var(--primary-btn-text);
+}
+
+.btn-primary:hover {
+  background: var(--primary-btn-hover);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--text);
+  color: var(--bg);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==================================================================== */
+/* RESPONSIVE DESIGN POUR MOBILE & TABLETTE                             */
+/* ==================================================================== */
+
+@media (max-width: 640px) {
+  body {
+    padding: 28px 16px 80px;
+  }
+
+  .page-icon-img {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+  }
+
+  h1.page-title {
+    font-size: 1.65rem;
+    line-height: 1.25;
+    margin-bottom: 6px;
+  }
+
+  .page-desc {
+    font-size: 0.92rem;
+    line-height: 1.45;
+    margin-bottom: 20px;
+  }
+
+  .sticky-header {
+    padding-top: 6px;
+    margin-bottom: 20px;
+  }
+
+  .step-counter {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+
+  /* Masquer les tabs horizontales sur mobile */
+  .step-tabs {
+    display: none !important;
+  }
+
+  /* Afficher et styliser le menu dropdown mobile */
+  .mobile-step-dropdown-wrapper {
+    display: block;
+    position: relative;
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .mobile-step-dropdown {
+    width: 100%;
+    padding: 12px 38px 12px 14px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    background-color: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-step-dropdown:focus {
+    outline: none;
+    border-color: var(--primary-btn-bg);
+    background-color: var(--bg);
+    box-shadow: 0 0 0 1px var(--primary-btn-bg);
+  }
+
+  .dropdown-chevron {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+  }
+
+  h2.step-title {
+    font-size: 1.22rem;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  p.step-subtitle {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    margin-bottom: 16px;
+  }
+
+  .notion-list {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .notion-list > li {
+    padding-left: 28px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .notion-list > li::before {
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+    top: 2px;
+  }
+
+  .notion-callout {
+    padding: 12px 14px;
+    margin: 16px 0;
+    font-size: 0.86rem;
+    gap: 10px;
+  }
+
+  .option-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .preview-section {
+    padding: 16px 12px;
+    margin: 20px 0;
+  }
+
+  .phone-mockup-wrapper {
+    width: 200px;
+    border-radius: 30px;
+  }
+
+  .shortcut-download-box {
+    padding: 16px 12px;
+  }
+
+  .shortcut-btn {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 0.92rem;
+  }
+
+  .step-actions {
+    margin-top: 28px;
+    padding-top: 16px;
+  }
+
+  .btn {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .toast {
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+    max-width: 340px;
+    margin: 0 auto;
+    text-align: center;
+  }
+}
+
+@media (max-width: 420px) {
+  body {
+    padding: 20px 12px 60px;
+  }
+
+  h1.page-title {
+    font-size: 1.45rem;
+  }
+
+  .mobile-step-dropdown {
+    font-size: 0.88rem;
+    padding: 10px 34px 10px 12px;
+  }
+
+  .phone-mockup-wrapper {
+    width: 180px;
+    border-radius: 26px;
+  }
+}

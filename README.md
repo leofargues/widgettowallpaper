@@ -1,7 +1,9 @@
 # 📱 Widget to Wallpaper
 
 > **Widget to Wallpaper** est un outil gratuit et open source permettant d'afficher votre calendrier directement sur l'écran verrouillé (*lockscreen*) de votre iPhone, sans aucune application tierce payante.
-
+> 
+> 📱 **Compatibilité** : Conçu et testé pour **iPhone 17** (résolution 1206 × 2622 px). Non testé sur les autres modèles. L'ajout de la compatibilité pour d'autres modèles sont prévus
+>
 ---
 
 ## ✨ Fonctionnalités

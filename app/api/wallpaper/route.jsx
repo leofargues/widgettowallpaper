@@ -21,14 +21,24 @@ export async function GET(request) {
     const dayName = DAYS[dayIndex !== undefined ? dayIndex : now.getDay()];
     const monthName = MONTHS[monthIndex !== undefined ? monthIndex : now.getMonth()];
 
-    // Détection de la configuration et du domaine hôte
+    // Détection de la configuration (Google API ou URL iCal)
     const icalUrl = process.env.GOOGLE_CALENDAR_ICAL_URL;
-    const isConfigured = Boolean(
+    
+    const isGoogleApiConfigured = Boolean(
+      process.env.GOOGLE_CLIENT_ID && 
+      process.env.GOOGLE_CLIENT_SECRET && 
+      process.env.GOOGLE_REFRESH_TOKEN &&
+      !process.env.GOOGLE_REFRESH_TOKEN.includes('votre-refresh-token')
+    );
+
+    const isIcalConfigured = Boolean(
       icalUrl &&
       !icalUrl.includes('VOTRE_IDENTIFIANT') &&
       !icalUrl.includes('VOTRE_URL_ICAL_ICI') &&
       (icalUrl.startsWith('http://') || icalUrl.startsWith('https://'))
     );
+
+    const isConfigured = isGoogleApiConfigured || isIcalConfigured;
 
     const host =
       request.headers.get('x-forwarded-host') ||

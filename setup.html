@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration — Widget to Wallpaper</title>
+  <link rel="icon" type="image/png" href="icon.png" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #37352f;
+      --text-secondary: #787774;
+      --text-tertiary: #9b9a97;
+      --border: #e9e9e7;
+      --border-subtle: #f1f1ef;
+      --surface: #fbfbfa;
+      --surface-hover: #f1f1ef;
+      --callout-bg: #f7f6f3;
+      --code-bg: #f7f6f3;
+      --code-border: #e9e9e7;
+      --code-text: #eb5757;
+      --primary-btn-bg: #2383e2;
+      --primary-btn-text: #ffffff;
+      --primary-btn-hover: #1b6ec2;
+      --accent: #2383e2;
+      --success: #0f7b6c;
+      --success-bg: #eef7f5;
+      --warning-bg: #fbf3db;
+      --warning-text: #8a6319;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #191919;
+        --text: #d4d4d4;
+        --text-secondary: #9b9b9b;
+        --text-tertiary: #686868;
+        --border: #2e2e2e;
+        --border-subtle: #252525;
+        --surface: #202020;
+        --surface-hover: #2a2a2a;
+        --callout-bg: #222222;
+        --code-bg: #242424;
+        --code-border: #333333;
+        --code-text: #ff7575;
+        --primary-btn-bg: #2383e2;
+        --primary-btn-text: #ffffff;
+        --primary-btn-hover: #3b94eb;
+        --accent: #38bdf8;
+        --success: #2eaadc;
+        --success-bg: #1e2830;
+        --warning-bg: #2c2718;
+        --warning-text: #e9c46a;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 60px 20px 100px;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    /* Notion Header */
+    .page-icon-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border);
+      object-fit: cover;
+      display: block;
+    }
+
+    .page-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      display: inline-block;
+      user-select: none;
+    }
+
+    h1.page-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .page-desc {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+    }
+
+    /* Stepper / Progress Bar Notion Style */
+    .progress-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .progress-segment {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 999px;
+      transition: background 0.3s ease;
+      cursor: pointer;
+    }
+
+    .progress-segment.active {
+      background: var(--text);
+    }
+
+    .progress-segment.completed {
+      background: var(--primary-btn-bg);
+    }
+
+    .step-counter {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Step Navigation Tabs */
+    .step-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 32px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .step-tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .step-tab:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .step-tab.active {
+      background: var(--surface-hover);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .tab-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      background: var(--border);
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .step-tab.active .tab-num {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    /* Step Card Container (Single step displayed) */
+    .step-content {
+      display: none;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .step-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2.step-title {
+      font-size: 1.45rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    p.step-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    /* Notion-like Lists */
+    .notion-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .notion-list > li {
+      position: relative;
+      padding-left: 32px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .notion-list > li::before {
+      content: attr(data-step);
+      position: absolute;
+      left: 0;
+      top: 1px;
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Notion Callouts */
+    .notion-callout {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--callout-bg);
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin: 20px 0;
+      font-size: 0.92rem;
+      color: var(--text);
+      border-left: 3px solid var(--border);
+    }
+
+    .notion-callout.warning {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+      border-left-color: #d97706;
+    }
+
+    .notion-callout.success {
+      background: var(--success-bg);
+      color: var(--success);
+      border-left-color: #0f7b6c;
+    }
+
+    .callout-icon {
+      font-size: 1.15rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    /* Notion Code Blocks */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 6px;
+      margin: 14px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      background: transparent;
+      border-bottom: 1px solid var(--code-border);
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    pre {
+      padding: 12px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+      color: var(--text);
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+
+    .copy-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .copy-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    code.inline {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      color: var(--code-text);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    /* Shortcut Download Button (Notion styled) */
+    .shortcut-download-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .shortcut-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0070f3;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: background 0.15s ease;
+    }
+
+    .shortcut-btn:hover {
+      background: #0051cc;
+    }
+
+    /* Navigation Footer (Bottom buttons) */
+    .step-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      border: none;
+      transition: all 0.15s ease;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .btn-primary {
+      background: var(--primary-btn-bg);
+      color: var(--primary-btn-text);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-btn-hover);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--text);
+      color: var(--bg);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <img src="icon.png" alt="Widget to Wallpaper" class="page-icon-img" />
+    <h1 class="page-title">Setup Widget to Wallpaper</h1>
+    <p class="page-desc">Guide pas à pas pour configurer votre calendrier et automatiser le fond d'écran iOS.</p>
+
+    <!-- Compatibilité -->
+    <div class="notion-callout warning" style="margin-top: 0; margin-bottom: 24px;">
+      <div class="callout-icon">⚠️</div>
+      <div>
+        <strong>Compatibilité :</strong> Fonctionne sur <strong>iPhone 17</strong> (non testé sur les autres modèles).
+      </div>
+    </div>
+
+    <!-- Progress indicator -->
+    <div class="progress-bar-container" id="progressBar">
+      <div class="progress-segment active" onclick="goToStep(1)"></div>
+      <div class="progress-segment" onclick="goToStep(2)"></div>
+      <div class="progress-segment" onclick="goToStep(3)"></div>
+      <div class="progress-segment" onclick="goToStep(4)"></div>
+    </div>
+
+    <div class="step-counter">
+      <span id="stepLabel">Étape 1 sur 4</span>
+      <span style="color: var(--text-tertiary);">4 étapes rapides</span>
+    </div>
+
+    <!-- Step Tabs -->
+    <div class="step-tabs">
+      <button class="step-tab active" id="tab-1" onclick="goToStep(1)">
+        <span class="tab-num">1</span>
+        <span>URL iCal</span>
+      </button>
+      <button class="step-tab" id="tab-2" onclick="goToStep(2)">
+        <span class="tab-num">2</span>
+        <span>Fichier .env</span>
+      </button>
+      <button class="step-tab" id="tab-3" onclick="goToStep(3)">
+        <span class="tab-num">3</span>
+        <span>Shortcut iOS</span>
+      </button>
+      <button class="step-tab" id="tab-4" onclick="goToStep(4)">
+        <span class="tab-num">4</span>
+        <span>Automatisation</span>
+      </button>
+    </div>
+
+    <!-- ==================== ÉTAPE 1 ==================== -->
+    <div class="step-content active" id="step-1">
+      <h2 class="step-title">1. Connecter Google Calendar</h2>
+      <p class="step-subtitle">Autorisez l'application via Google pour récupérer vos événements avec leurs vraies couleurs.</p>
+
+      <p style="font-size: 0.95rem; margin-bottom: 10px;"><strong>Méthode Recommandée (API Google) :</strong></p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="/api/auth/google/login" target="_blank" class="shortcut-btn" style="background: #ea4335; color: white;">
+          <span>🔑</span> Connexion avec Google
+        </a>
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-secondary);">Cette méthode nécessite de créer un projet Google Cloud au préalable et d'ajouter le <code>GOOGLE_CLIENT_ID</code> dans vos variables Vercel.</p>
+
+      <hr style="border: 0; border-top: 1px solid var(--border); margin: 30px 0;" />
+
+      <p style="font-size: 0.95rem; margin-bottom: 10px;"><strong>Méthode Alternative (iCal URL) :</strong></p>
+      <ol class="notion-list">
+        <li data-step="1">Allez sur <strong>Google Agenda</strong> sur votre ordinateur.</li>
+        <li data-step="2">Allez dans <strong>Paramètres et partage</strong> de votre agenda.</li>
+        <li data-step="3">Copiez l'<strong>Adresse secrète au format iCal</strong>.</li>
+      </ol>
+
+      <div class="step-actions">
+        <div></div>
+        <button class="btn btn-primary" onclick="goToStep(2)">
+          <span>Étape suivante</span>
+          <span>→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== ÉTAPE 2 ==================== -->
+    <div class="step-content" id="step-2">
+      <h2 class="step-title">2. Entrer les clés dans l'environnement</h2>
+      <p class="step-subtitle">Ajoutez les clés ou l'URL pour que le serveur charge votre calendrier.</p>
+
+      <p style="font-size: 0.95rem; margin-bottom: 10px;"><strong>☁️ En production (Vercel) :</strong></p>
+      <div class="notion-callout">
+        <div class="callout-icon">⚙️</div>
+        <div>
+          Dans votre projet Vercel &gt; <strong>Settings</strong> &gt; <strong>Environment Variables</strong>, ajoutez vos variables selon votre choix :<br><br>
+          <strong>API Google :</strong> <code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code> et <code>GOOGLE_REFRESH_TOKEN</code><br>
+          <strong>Lien iCal :</strong> <code>GOOGLE_CALENDAR_ICAL_URL</code>
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn btn-secondary" onclick="goToStep(1)">
+          <span>← Précédent</span>
+        </button>
+        <button class="btn btn-primary" onclick="goToStep(3)">
+          <span>Étape suivante</span>
+          <span>→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== ÉTAPE 3 ==================== -->
+    <div class="step-content" id="step-3">
+      <h2 class="step-title">3. Installer et configurer le Shortcut iOS</h2>
+      <p class="step-subtitle">Téléchargez et configurez le raccourci Apple officiel pour générer et appliquer le fond d'écran.</p>
+
+      <div class="shortcut-download-box">
+        <div style="font-weight: 600; font-size: 1rem;">Lien d'installation du Shortcut Apple</div>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); max-width: 480px;">
+          Ouvrez ce lien depuis votre iPhone pour ajouter le raccourci directement à votre application Raccourcis :
+        </p>
+        <a
+          href="https://www.icloud.com/shortcuts/4c17a3148e7340c2bb77fc58c37723d6"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="shortcut-btn"
+        >
+          <span>⚡ Installer le Shortcut iOS</span>
+        </a>
+      </div>
+
+      <p style="font-size: 0.95rem; font-weight: 600; margin: 20px 0 10px;">Comment le configurer :</p>
+      <ol class="notion-list">
+        <li data-step="1">
+          Copiez l'URL de votre API :
+          <div class="code-block" style="margin-top: 8px;">
+            <div class="code-header">
+              <span>URL de l'API</span>
+              <button class="copy-btn" id="apiUrlCopyBtn" onclick="copyCode('https://votre-projet.vercel.app/api/wallpaper')">Copier</button>
+            </div>
+            <pre><code id="apiUrlCode">https://votre-projet.vercel.app/api/wallpaper</code></pre>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">
+            <em>(Optionnel)</em> Vous pouvez ajouter <code class="inline">?theme=light</code> ou <code class="inline">?theme=dark</code> à la fin de l'URL.
+          </div>
+        </li>
+        <li data-step="2">
+          Cliquez sur le bouton ci-dessus <strong>« ⚡ Installer le Shortcut iOS »</strong> depuis votre iPhone.
+        </li>
+        <li data-step="3">
+          Sur l'écran d'installation, appuyez sur <strong>« Configurer le raccourci »</strong>.
+        </li>
+        <li data-step="4">
+          Collez l'URL de votre API dans la case <strong>« URL »</strong>, puis appuyez sur <strong>« Suivant »</strong>.
+        </li>
+        <li data-step="5">
+          Sélectionnez votre fond d'écran avec le bouton <strong>« Choisir »</strong>.
+        </li>
+        <li data-step="6">
+          Appuyez ensuite sur <strong>« Ajouter ce raccourci »</strong>.
+        </li>
+        <li data-step="7">
+          Exécutez le raccourci une première fois manuellement et appuyez sur <strong>« Toujours autoriser »</strong> lorsque iOS demande les permissions.
+        </li>
+      </ol>
+
+      <div class="step-actions">
+        <button class="btn btn-secondary" onclick="goToStep(2)">
+          <span>← Précédent</span>
+        </button>
+        <button class="btn btn-primary" onclick="goToStep(4)">
+          <span>Étape suivante</span>
+          <span>→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== ÉTAPE 4 ==================== -->
+    <div class="step-content" id="step-4">
+      <h2 class="step-title">4. Installer l'automatisation</h2>
+      <p class="step-subtitle">Configurez le changement automatique de votre fond d'écran à des heures clés de la journée.</p>
+
+      <ol class="notion-list">
+        <li data-step="1">
+          Ouvrez l'application <strong>Raccourcis</strong> sur votre iPhone et rendez-vous dans l'onglet <strong>« Automatisation »</strong> en bas.
+        </li>
+        <li data-step="2">
+          Touchez le bouton <strong>« + »</strong> (en haut à droite) ou <strong>« Nouvelle automatisation »</strong>.
+        </li>
+        <li data-step="3">
+          Choisissez <strong>« Heure de la journée »</strong> (ex: <code class="inline">07:00</code> pour le matin ou <code class="inline">20:00</code> pour le soir) et cochez <strong>« Tous les jours »</strong>.
+        </li>
+        <li data-step="4">
+          Sélectionnez <strong>« Exécuter immédiatement »</strong> et assurez-vous que <strong>« M'avertir lors de l'exécution »</strong> est désactivé.
+        </li>
+        <li data-step="5">
+          Touchez <strong>« Suivant »</strong>, puis sélectionnez <strong>« Exécuter le raccourci »</strong> et choisissez le raccourci installé à l'étape 3.
+        </li>
+        <li data-step="6">
+          Validez avec <strong>« Terminé »</strong>.
+        </li>
+      </ol>
+
+      <div class="notion-callout">
+        <div class="callout-icon">💡</div>
+        <div>
+          <strong>Astuce (Optionnel) :</strong> Si vous avez beaucoup d'événements dans votre agenda, n'hésitez pas à créer des automatisations supplémentaires pendant la journée (ex: 12h00, 15h00, 18h00...). Le fond d'écran se rafraîchira pour masquer les rendez-vous déjà passés et afficher les suivants.
+        </div>
+      </div>
+
+      <div class="notion-callout success">
+        <div class="callout-icon">🎉</div>
+        <div>
+          <strong>Configuration terminée !</strong> Votre iPhone actualisera désormais automatiquement votre fond d'écran tous les jours avec votre planning du jour.
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn btn-secondary" onclick="goToStep(3)">
+          <span>← Précédent</span>
+        </button>
+        <button class="btn btn-primary" onclick="goToStep(1)">
+          <span>Recommencer au début ↺</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">✓ Copié dans le presse-papier</div>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    function goToStep(stepNumber) {
+      if (stepNumber < 1 || stepNumber > totalSteps) return;
+      currentStep = stepNumber;
+
+      // 1. Show only current step content
+      for (let i = 1; i <= totalSteps; i++) {
+        const stepEl = document.getElementById(`step-${i}`);
+        const tabEl = document.getElementById(`tab-${i}`);
+        if (stepEl) {
+          if (i === currentStep) {
+            stepEl.classList.add('active');
+          } else {
+            stepEl.classList.remove('active');
+          }
+        }
+        if (tabEl) {
+          if (i === currentStep) {
+            tabEl.classList.add('active');
+          } else {
+            tabEl.classList.remove('active');
+          }
+        }
+      }
+
+      // 2. Update progress segments
+      const segments = document.querySelectorAll('.progress-segment');
+      segments.forEach((seg, idx) => {
+        const step = idx + 1;
+        seg.className = 'progress-segment';
+        if (step === currentStep) {
+          seg.classList.add('active');
+        } else if (step < currentStep) {
+          seg.classList.add('completed');
+        }
+      });
+
+      // 3. Update counter label
+      const stepLabel = document.getElementById('stepLabel');
+      if (stepLabel) {
+        stepLabel.textContent = `Étape ${currentStep} sur ${totalSteps}`;
+      }
+
+      // Scroll to top smoothly
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function copyCode(text) {
+      navigator.clipboard.writeText(text).then(function() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(function() {
+          toast.classList.remove('show');
+        }, 2000);
+      }).catch(function(err) {
+        console.error('Erreur de copie :', err);
+      });
+    }
+
+    // Auto-détection du nom de domaine courant
+    window.addEventListener('DOMContentLoaded', () => {
+      const origin = window.location.origin;
+      if (origin && !origin.startsWith('file://')) {
+        const apiUrl = `${origin}/api/wallpaper`;
+        const codeEl = document.getElementById('apiUrlCode');
+        const copyBtn = document.getElementById('apiUrlCopyBtn');
+        if (codeEl) codeEl.textContent = apiUrl;
+        if (copyBtn) copyBtn.setAttribute('onclick', `copyCode('${apiUrl}')`);
+      }
+    });
+  </script>
+</body>
+</html>

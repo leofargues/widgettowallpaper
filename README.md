@@ -43,14 +43,21 @@
 
 > 💡 **Astuce** : Une fois déployé sur Vercel, ouvrez simplement **`https://votre-projet.vercel.app/setup.html`** pour suivre l'assistant interactif étape par étape !
 
-### Étape 1 : Récupérer votre lien iCal Google Agenda
+### Étape 1 : Obtenir vos accès Google Calendar
 
-1. Rendez-vous sur [Google Agenda](https://calendar.google.com/) sur votre ordinateur.
-2. Cliquez sur les 3 points à côté de votre agenda principal > **Paramètres et partage**.
-3. Faites défiler jusqu'à la section **Intégrer l'agenda**.
-4. Copiez l'**Adresse secrète au format iCal** (l'URL se termine par `basic.ics`).
+Vous avez deux méthodes pour connecter votre calendrier :
 
-> ⚠️ **Important** : Ne partagez jamais cette URL publiquement, elle permet de lire vos événements sans mot de passe.
+#### Méthode 1 : API Google (Recommandée — Couleurs natives & Rapide)
+1. Allez sur la [Google Cloud Console](https://console.cloud.google.com/).
+2. Créez un projet et activez l'API **Google Calendar API**.
+3. Dans **Écran de consentement OAuth**, choisissez **Externe** (ajoutez votre email comme utilisateur test).
+4. Dans **Identifiants**, créez un **ID client OAuth** (Application Web).
+   - Ajoutez les URIs de redirection autorisés : `http://localhost:3000/api/auth/google/callback` et `https://votre-projet.vercel.app/api/auth/google/callback`.
+5. Notez votre **Client ID** et **Client Secret**.
+
+#### Méthode 2 : Lien iCal (Alternative simple)
+1. Sur Google Agenda, allez dans **Paramètres et partage** de votre agenda.
+2. Copiez l'**Adresse secrète au format iCal** (se termine par `basic.ics`).
 
 ---
 
@@ -59,9 +66,15 @@
 1. Forkez ou poussez ce dépôt sur votre compte **GitHub**.
 2. Allez sur [Vercel](https://vercel.com/) et cliquez sur **Add New > Project**.
 3. Importez votre dépôt `Widget-to-Wallpaper`.
-4. Dans la section **Environment Variables**, ajoutez :
-   - **Name** : `GOOGLE_CALENDAR_ICAL_URL`
-   - **Value** : *Votre URL secrète iCal copiée à l'étape 1*
+4. Dans la section **Environment Variables**, ajoutez selon votre méthode :
+   - **Méthode 1 (API Google)** : 
+     - `GOOGLE_CLIENT_ID`
+     - `GOOGLE_CLIENT_SECRET`
+   - **Méthode 2 (iCal)** : 
+     - `GOOGLE_CALENDAR_ICAL_URL`
+5. Cliquez sur **Deploy**.
+
+> 🔗 **Pour la Méthode 1** : Une fois déployé, visitez `https://votre-projet.vercel.app/api/auth/google/login` pour vous connecter et obtenir votre `GOOGLE_REFRESH_TOKEN` à ajouter dans Vercel.
 5. Cliquez sur **Deploy**.
 
 Votre instance sera accessible publiquement sur une URL du type :
